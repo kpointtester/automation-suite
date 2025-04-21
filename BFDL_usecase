@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VXPlayer in Container Mode</title>
+    <script type='text/javascript' src='https://vega-automation.zencite.in/assets/orca/media/embed/player-silk.js'></script>
+    <style>
+      #your-container {
+        --container-height: 500px;
+        height: var(--container-height);
+        width: calc(var(--container-height) / 1.777777777777778);
+        position: relative;
+      }
+      #your-container [data-vx-type=reels]{
+        height: 100%;
+        width: 100%;
+      }
+      #your-container #vx-player {
+        height: var(--container-height);
+        width: calc(var(--container-height) / 1.777777777777778);
+        position: relative;
+        margin: 0 auto;
+      }
+
+      @media (max-width: 768px) {
+        #your-container,
+        #your-container #vx-player {
+          --container-height: 170.77777777778vw;
+        }
+        #your-container [data-vx-type=reels] {
+          --vx-video-height: 100% !important;
+          --vx-video-width: 100% !important;
+          --vx-player-overlay-height: 100% !important;
+          --vx-player-overlay-width: 100% !important;
+        }
+
+        #vx-player.vx-player-slider {
+          position: inherit !important;
+          background: transparent !important;
+          width: 100% !important;
+          height: 100% !important;
+          --vx-video-height: 100% !important;
+          --vx-video-width: 100% !important;
+          --vx-player-overlay-height: 100% !important;
+          --vx-player-overlay-width: 100% !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Normal embedding with player-silk.js</h3>
+ <div id="inline-video" data-video-host='vega-automation.zencite.in' data-kvideo-id='gcc-d4b998fc-362f-4c06-9792-34f626cd1db9' data-samesite=true style='width:70%' data-video-params='{"simulated_fullscreen": true}'
+ ></div>
+  <br>
+    <div id="your-container">
+      <div
+        id="kpoint-reels"
+        data-vx-host="vega-automation.zencite.in"
+        data-vx-type="reels"
+        data-vx-params='{
+        "videoIds" : [
+          "gcc-f1a7c03b-fd18-42c7-922c-dadd7d38c718",
+          "gcc-d110ae5c-4ec7-4323-a8d2-0640691e220c",
+          "gcc-2216f1aa-b881-4c12-a16c-f243a01def7d"
+        ]
+      }'
+      ></div>
+    </div>
+
+    <script src="//vega-automation.zencite.in/assets/orca/media/embed/player-vx.js"></script>
+  </body>
+</html>
