@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timer Implementation</title>
+    <style>
+      .timer-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+        background-color: aliceblue;
+      }
+      .timer {
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+      .controls button {
+        margin: 0 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+      html,
+      body {
+        overscroll-behavior: contain;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="timer-container">
+      <div class="timer" id="timer">00:00:00</div>
+      <div class="volume" id="volume">Volume: 100%</div>
+      <div class="controls">
+        <button id="startBtn">Start</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resetBtn">Reset</button>
+        <button id="mute">Mute</button>
+        <button id="unmute">Unmute</button>
+      
+            <p style="position: fixed; bottom: 0; width:100%; text-align: center; color: crimson; background-color: white;">Any help/information please connect to 
+            <a href="https://wa.me/+918570961005?text=Hello%20Pankaj,">Pankaj Joshi</a>
+            at 
+            <a href="https://mail.google.com/mail/u/0/?view=cm&amp;fs=1&amp;tf=1&amp;to=pankaj.joshi@KPOINT.com&amp;Subject=Need%20Help,&amp;body=HI%20Pankaj,">EMAIL</a>
+            </p> 
+        </div>
+    </div>
+
+    <script>
+      class Timer {
+        constructor() {
+          this.time = 0;
+          this.isRunning = false;
+          this.interval = null;
+          this.msgToken = this.getMsgToken();
+          this.volume = 1;
+
+          this.timerDisplay = document.getElementById('timer');
+          this.volumeDisplay = document.getElementById('volume');
+          this.startBtn = document.getElementById('startBtn');
+          this.pauseBtn = document.getElementById('pauseBtn');
+          this.resetBtn = document.getElementById('resetBtn');
+          this.muteBtn = document.getElementById('mute');
+          this.unmuteBtn = document.getElementById('unmute');
+
+          this.initializeEventListeners();
+          this.setupMessageListener();
+          this.sendReadyEvent();
+        }
+
+        getMsgToken() {
+          const urlParams = new URLSearchParams(window.location.search);
+          return urlParams.get('msgToken') || 'default';
+        }
+
+        sendToParent(type, data) {
+          console.log('Sending message to parent:', type, data);
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage(
+              {
+                type: type,
+                data: data || null,
+                msgToken: this.msgToken,
+              },
+              '*'
+            );
+          }
+        }
+
+        sendReadyEvent() {
+          this.sendToParent('VX_READY');
+        }
+
+        setupMessageListener() {
+          window.addEventListener('message', (event) => {
+            console.log('Received message from parent:', event.data);
+            const message = event.data;
+            if (message.msgToken !== this.msgToken) return;
+
+            switch (message.type) {
+              case 'VX_PLAY':
+                if (message.data && typeof message.data.volume === 'number') {
+                  this.volume = message.data.volume;
+                  this.volumeDisplay.textContent = `Volume: ${this.volume * 100}%`;
+                } else {
+                  this.volume = 0;
+                  this.volumeDisplay.textContent = 'Volume: Muted';
+                }
+                this.start();
+                break;
+
+              case 'VX_PAUSE':
+                this.pause();
+                break;
+
+              case 'VX_SEEK':
+                if (message.data && typeof message.data.time === 'number') {
+                  this.seek(message.data.time);
+                }
+                break;
+
+              case 'VX_MUTE':
+                this.volume = 0;
+                this.volumeDisplay.textContent = 'Volume: Muted';
+                break;
+
+              case 'VX_UNMUTE':
+                this.volume = 1;
+                this.volumeDisplay.textContent = 'Volume: Unmuted';
+                break;
+
+              case 'VX_SET_VOLUME':
+                if (message.data && typeof message.data.volume === 'number') {
+                  this.volume = message.data.volume;
+                  this.volumeDisplay.textContent = `Volume: ${this.volume * 100}%`;
+                }
+                break;
+
+              case 'VX_CLICK':
+                if (message.data) {
+                  this.handleForwardedClick(message.data);
+                }
+                break;
+            }
+          });
+        }
+
+        formatTime(timeInSeconds) {
+          const hours = Math.floor(timeInSeconds / 3600);
+          const minutes = Math.floor((timeInSeconds % 3600) / 60);
+          const seconds = timeInSeconds % 60;
+          return `${hours.toString().padStart(2, '0')}:${minutes
+            .toString()
+            .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        updateDisplay() {
+          console.log('Updating display with time:', this.time);
+          this.timerDisplay.textContent = this.formatTime(this.time);
+        }
+
+        start() {
+          if (!this.isRunning) {
+            this.isRunning = true;
+            this.interval = setInterval(() => {
+              this.time++;
+              this.updateDisplay();
+            }, 1000);
+            this.sendToParent('AD_VIDEO_START', { currentTime: this.time });
+          }
+        }
+
+        pause() {
+          if (this.isRunning) {
+            this.isRunning = false;
+            clearInterval(this.interval);
+            this.sendToParent('AD_PAUSED', { currentTime: this.time });
+          }
+        }
+
+        reset() {
+          this.pause();
+          this.time = 0;
+          this.updateDisplay();
+        }
+
+        seek(timeInSeconds) {
+          this.time = timeInSeconds;
+          this.updateDisplay();
+        }
+
+        handleForwardedClick(data) {
+          console.log('Handling forwarded click at coordinates:', data.x, data.y);
+          const element = document.elementFromPoint(data.x, data.y);
+          if (element) {
+            console.log('Found element:', element);
+            const clickEvent = new MouseEvent('click', {
+              bubbles: true,
+              cancelable: true,
+              view: window,
+              clientX: data.x,
+              clientY: data.y,
+            });
+            element.dispatchEvent(clickEvent);
+          } else {
+            console.log('No element found at the specified coordinates');
+          }
+        }
+
+        initializeEventListeners() {
+          this.startBtn.addEventListener('click', () => this.start());
+          this.pauseBtn.addEventListener('click', () => this.pause());
+          this.resetBtn.addEventListener('click', () => this.reset());
+          this.muteBtn.addEventListener('click', () => {
+            this.volume = 0;
+            this.volumeDisplay.textContent = 'Volume: Muted';
+            this.sendToParent('AD_MUTED');
+          });
+          this.unmuteBtn.addEventListener('click', () => {
+            this.volume = 1;
+            this.volumeDisplay.textContent = 'Volume: Unmuted';
+            this.sendToParent('AD_UNMUTED');
+          });
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        window.timer = new Timer();
+      });
+    </script>
+  </body>
+</html>
