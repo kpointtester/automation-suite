@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        height: 100%;
+        width: 100%;
+        gap: 1rem;
+      }
+
+      .card {
+        width: 50%;
+        aspect-ratio: 9/16;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: antiquewhite;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div
+        class="card"
+        data-video-id="gcc-50e55e44-908a-4472-a7b3-7cecf04f689c"
+      >
+        Video0
+      </div>
+      <div
+        class="card"
+        data-video-id="gcc-175351d8-9ded-4d02-b485-64c723421305"
+      >
+        Video1
+      </div>
+      <div
+        class="card"
+        data-video-id="gcc-8d7e66b2-9969-40df-9451-470f981820f9"
+      >
+        Video2
+      </div>
+      <div
+        class="card"
+        data-video-id="gcc-accf6e1d-77fa-4841-9c80-7597e6965cdb"
+      >
+        Video3
+      </div>
+      <div
+        class="card"
+        data-video-id="gcc-6a04a8ee-da3e-4a22-a456-bd4956ef0626"
+      >
+        Video4
+      </div>
+      <div
+        class="card"
+        data-video-id="gcc-17834750-4f32-4d2e-8a7f-bdd249adfc07"
+      >
+        Video5
+      </div>
+      <div
+        class="card"
+        data-video-id="gcc-97a74ef1-35b0-40d7-a535-28bce3add347"
+      >
+        Video6
+      </div>
+      <div
+        class="card"
+        data-video-id="gcc-a2eb8755-ea24-4c57-91fa-213d3dc5b6e3"
+      >
+        Video7
+      </div>
+    </div>
+
+    <div id="kpoint-reels" style="--vx-primary-color: red"></div>
+
+    <!-- <script
+      type="text/javascript"
+      src="https://assets.zencite.in/orca/media/embed/player-vx.js"
+    ></script> -->
+    <!-- <script src="http://localhost:8005/cdn/player-vx.js"></script> -->
+    <script     src="https://showcase-qa.zencite.in/assets/orca/media/embed/player-vx.js"
+    ></script>
+    <!-- <script src="https://t3-cms.zencite.in/orca/media/embed/player-vx.js"></script> -->
+
+    <script>
+      function initPlayer() {
+        const container = document.querySelector("#kpoint-reels");
+        const vxPlayer = VXPlayer(container, {
+          hostname: "demos.kpoint.com",
+          type: "reels",
+          videoIds: [
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-50e55e44-908a-4472-a7b3-7cecf04f689c",
+            "gcc-a80e1d84-bc6a-4bc6-aadf-7e483885b793",
+            "gcc-175351d8-9ded-4d02-b485-64c723421305",
+            "gcc-8d7e66b2-9969-40df-9451-470f981820f9",
+            "gcc-accf6e1d-77fa-4841-9c80-7597e6965cdb",
+            "gcc-43475106-3fbc-41ec-b2a4-4386f0444c9e",
+            "gcc-02675218-7dc5-4ef9-90ab-3415e835a59b",
+            "gcc-a2eb8755-ea24-4c57-91fa-213d3dc5b6e3",
+          ],
+          fullscreen: true,
+          autoScroll: true,
+          mode: "popup",
+          loop: true,
+          comment: true,
+          like: true,
+          share: true,
+          noOfVideosToPreload:10
+          // "token": "wOrejAGhLom+NBGvoAuiMwp0Op6BuIrrHqu/nexKzOBtqNK4DctVMw8qxlstqG0M+MD2Roo6DXWIfVUPYe2uhFbHD47MSoVP7XcAPEYGuQjr/7mQLqa3tebAhs+/qW0zTfq6PJKvyE3iTt/Qz89B2W+SQLulzwCAFh8Jrxx7GfnO9PnLXDl3Y3FfcQ2miAD5vjVIGksxtiQcbvnP6vWPCvKXgMOk2Wz6ynuhZViElUT4/HdJeUHoEfYtV0r6EGJTHvvpxzy8xl4mkFOQk6/R44kA+36r+hPRUOwCQmO2BjF5zs9o7Bfx/S/+QNfohJOvTDlsCHwCSrneclXQI62FM/F+09/fxbXqhUtmiYSpYVORZCQ5T4gq/cCP26DH2XbTda+WGqP0kS7yrngXtxcmcDDPApZRb5MnsHhj4fJKQB3Nb8wmwGhmrez49v4OdbN5YWq24qegbVMn0f0mTHvmkA==",
+          // "kcid": "cie83e5480f9624ac0ad36356689209654"
+        });
+        vxPlayer.getVideoConfig = (videoId) => {
+          return {
+            packageId: "gcc-c7a9a",
+          };
+        };
+        window.vxPlayer3 = vxPlayer;
+        // vxPlayer.on("onVideoTimeUpdate", function (index, currentTime) {
+        //   console.log("onVideoTimeUpdate", index, currentTime);
+        // });
+
+        document.querySelectorAll(".card").forEach((thumbEl) => {
+          const videoId = thumbEl.getAttribute("data-video-id");
+          thumbEl.addEventListener("click", (e) => {
+            e.preventDefault();
+            vxPlayer.jumpTo(videoId);
+          });
+        });
+      }
+      if (window.VXPlayer) {
+        initPlayer();
+      } else {
+        document.addEventListener("vxplayerready", function () {
+          initPlayer();
+        });
+      }
+      document.addEventListener("kpw-onclick-button", function (event) {
+        console.log(event.detail);
+      });
+    </script>
+  </body>
+</html>

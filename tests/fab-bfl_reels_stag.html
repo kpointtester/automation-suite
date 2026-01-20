@@ -27,49 +27,49 @@
     <div class="container">
       <div
         class="card"
-        data-video-id="gcc-871fb10c-ee3c-47b2-9711-460cf16fd2e8"
+        data-video-id="gcc-1ebb6e7f-3549-476b-852d-0b3fdbc150f1"
       >
         Video0
       </div>
       <div
         class="card"
-        data-video-id="gcc-f934727e-0123-41a9-ac18-20d35e7e9138"
+        data-video-id="gcc-2a434020-8aff-41df-a3f4-3e065bee081c"
       >
         Video1
       </div>
       <div
         class="card"
-        data-video-id="gcc-d110ae5c-4ec7-4323-a8d2-0640691e220c"
+        data-video-id="gcc-455cdf7d-8e26-40e7-a0df-b18e37d9ad16"
       >
         Video2
       </div>
       <div
         class="card"
-        data-video-id="gcc-4ea5107d-6d22-440f-87a3-e7067dc47a47"
+        data-video-id="gcc-7e6c332b-a962-4fad-b174-7882e99cd9af"
       >
         Video3
       </div>
       <div
         class="card"
-        data-video-id="gcc-f1a7c03b-fd18-42c7-922c-dadd7d38c718"
+        data-video-id="gcc-d1c75561-b58e-4657-9b7f-401f314d62d4"
       >
         Video4
       </div>
       <div
         class="card"
-        data-video-id="gcc-2216f1aa-b881-4c12-a16c-f243a01def7d"
+        data-video-id="gcc-914e55f9-0595-40e8-9307-5cb14486bc58"
       >
         Video5
       </div>
       <div
         class="card"
-        data-video-id="gcc-3b136d28-b0a7-4ba0-b4cf-728089c51950"
+        data-video-id="gcc-d30f725f-4125-4df1-883e-430df31d6073"
       >
         Video6
       </div>
       <div
         class="card"
-        data-video-id="gcc-fabfa4b9-05ef-476f-ab23-a6fdf0d9037b"
+        data-video-id="gcc-6fa900c3-8812-43e2-9a67-2fb066b022d4"
       >
         Video7
       </div>
@@ -83,21 +83,18 @@
 function initPlayer() {
   const container = document.querySelector("#kpoint-reels");
   const vxPlayer = VXPlayer(container, {
-    hostname: "vega-automation.zencite.in",
+    hostname: "front.zencite.in",
     type: "reels",
     videoIds: [
-      "gcc-871fb10c-ee3c-47b2-9711-460cf16fd2e8",
-      "gcc-f934727e-0123-41a9-ac18-20d35e7e9138",
-      "",
-      "gcc-871fb10c-ee3c-47b2-9711-460cf16fd2e8",
-      "gcc-f934727e-0123-41a9-ac18-20d35e7e9138",
-      "gcc-d110ae5c-4ec7-4323-a8d2-0640691e220c",
-      "gcc-4ea5107d-6d22-440f-87a3-e7067dc47a47",
-      "gcc-f1a7c03b-fd18-42c7-922c-dadd7d38c718",
-      "",
-      "gcc-2216f1aa-b881-4c12-a16c-f243a01def7d",
-      "gcc-3b136d28-b0a7-4ba0-b4cf-728089c51950",
-      "gcc-fabfa4b9-05ef-476f-ab23-a6fdf0d9037b"
+      "gcc-7e6c332b-a962-4fad-b174-7882e99cd9af",
+      "gcc-455cdf7d-8e26-40e7-a0df-b18e37d9ad16",
+      "gcc-2a434020-8aff-41df-a3f4-3e065bee081c",
+      "gcc-1ebb6e7f-3549-476b-852d-0b3fdbc150f1",
+      "gcc-3aed2ce5-7dcc-4914-b383-236f6269a156",
+      "gcc-6fa900c3-8812-43e2-9a67-2fb066b022d4",
+      "gcc-d30f725f-4125-4df1-883e-430df31d6073",
+      "gcc-914e55f9-0595-40e8-9307-5cb14486bc58",
+      "gcc-d1c75561-b58e-4657-9b7f-401f314d62d4"
     ],
     fullscreen: true,
     autoScroll: true,
@@ -108,7 +105,10 @@ function initPlayer() {
     share: true,
     comment: true,
     like: false,
-    scale: true
+    scale: true,
+
+    preloadSeconds:90,
+    noOfVideosToPreload:2,
   }
 );
   vxPlayer.on("onVideoTimeUpdate", function (index, currentTime) {
@@ -132,7 +132,7 @@ if (window.VXPlayer) {
   });
 }
 </script>
-    <script src="https://vega-automation.zencite.in/assets/orca/media/embed/player-vx.js
+    <script src="https://t3-cms.zencite.in/assets/orca/media/embed/player-vx.js
     "></script>
 
   </body>
