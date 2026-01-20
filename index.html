@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Embed Test Suite</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 5px; }
+    .subtitle { color: #666; margin-bottom: 20px; }
+    input {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    .card {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .card a {
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+      word-break: break-word;
+    }
+    .card small {
+      display: block;
+      margin-top: 5px;
+      color: #888;
+    }
+  </style>
+  <script>
+    function filterTests() {
+      const input = document.getElementById('search').value.toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.display = card.dataset.name.includes(input) ? '' : 'none';
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>Embed Test Suite</h1>
+  <div class="subtitle">Total test pages: 17</div>
+
+  <input
+    id="search"
+    type="text"
+    placeholder="Search test pages..."
+    onkeyup="filterTests()"
+  />
+
+  <div class="grid">
+<div class="card" data-name="bfdl_usecase.html">
+<a href="tests/BFDL_usecase.html" target="_blank">BFDL_usecase.html</a>
+<small>tests/BFDL_usecase.html</small>
+</div>
+<div class="card" data-name="ad_replica.html">
+<a href="tests/ad_replica.html" target="_blank">ad_replica.html</a>
+<small>tests/ad_replica.html</small>
+</div>
+<div class="card" data-name="ads_monitize.html">
+<a href="tests/ads_monitize.html" target="_blank">ads_monitize.html</a>
+<small>tests/ads_monitize.html</small>
+</div>
+<div class="card" data-name="bfl_swiper.html">
+<a href="tests/bfl_swiper.html" target="_blank">bfl_swiper.html</a>
+<small>tests/bfl_swiper.html</small>
+</div>
+<div class="card" data-name="check_redirection.html">
+<a href="tests/check_redirection.html" target="_blank">check_redirection.html</a>
+<small>tests/check_redirection.html</small>
+</div>
+<div class="card" data-name="fab-bfl_reels.html">
+<a href="tests/fab-bfl_reels.html" target="_blank">fab-bfl_reels.html</a>
+<small>tests/fab-bfl_reels.html</small>
+</div>
+<div class="card" data-name="fab-bfl_reels_stag.html">
+<a href="tests/fab-bfl_reels_stag.html" target="_blank">fab-bfl_reels_stag.html</a>
+<small>tests/fab-bfl_reels_stag.html</small>
+</div>
+<div class="card" data-name="fab-mls.html">
+<a href="tests/fab-mls.html" target="_blank">fab-mls.html</a>
+<small>tests/fab-mls.html</small>
+</div>
+<div class="card" data-name="fab-reels.html">
+<a href="tests/fab-reels.html" target="_blank">fab-reels.html</a>
+<small>tests/fab-reels.html</small>
+</div>
+<div class="card" data-name="info-widget.html">
+<a href="tests/info-widget.html" target="_blank">info-widget.html</a>
+<small>tests/info-widget.html</small>
+</div>
+<div class="card" data-name="nv3embed.html">
+<a href="tests/nv3Embed.html" target="_blank">nv3Embed.html</a>
+<small>tests/nv3Embed.html</small>
+</div>
+<div class="card" data-name="orca_vega.html">
+<a href="tests/orca_vega.html" target="_blank">orca_vega.html</a>
+<small>tests/orca_vega.html</small>
+</div>
+<div class="card" data-name="pip-player-latest.html">
+<a href="tests/pip-player-latest.html" target="_blank">pip-player-latest.html</a>
+<small>tests/pip-player-latest.html</small>
+</div>
+<div class="card" data-name="preloadnonpreload.html">
+<a href="tests/preloadNonPreload.html" target="_blank">preloadNonPreload.html</a>
+<small>tests/preloadNonPreload.html</small>
+</div>
+<div class="card" data-name="qualys-issue.html">
+<a href="tests/qualys-issue.html" target="_blank">qualys-issue.html</a>
+<small>tests/qualys-issue.html</small>
+</div>
+<div class="card" data-name="reels.html">
+<a href="tests/reels.html" target="_blank">reels.html</a>
+<small>tests/reels.html</small>
+</div>
+<div class="card" data-name="track_embed.html">
+<a href="tests/track_embed.html" target="_blank">track_embed.html</a>
+<small>tests/track_embed.html</small>
+</div>
+  </div>
+</body>
+</html>
