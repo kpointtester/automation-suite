@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div
+      id="kpoint-reels"
+      data-vx-host="vega-automation.zencite.in"
+      data-vx-type="reels"
+      data-vx-params='{
+        "videoIds": [
+        "gcc-871fb10c-ee3c-47b2-9711-460cf16fd2e8",
+        "gcc-f934727e-0123-41a9-ac18-20d35e7e9138",
+        "gcc-d110ae5c-4ec7-4323-a8d2-0640691e220c",
+        "gcc-4ea5107d-6d22-440f-87a3-e7067dc47a47",
+        "gcc-f1a7c03b-fd18-42c7-922c-dadd7d38c718"
+  ],
+	    "fullscreen": false,
+            "autoScroll": true
+}'
+      data-vx-widgets='{
+	"reels": {
+		"list": [{
+			"title": true,
+			"description": true,
+			"userName": true,
+			"userAvatar": true,
+			"like": true,
+			"share": true,
+			"comment": true,
+			"close": false,
+      "follow": true,
+      "more": true,
+      "lightWeightPlayer" :true
+		}]
+	}
+}'
+    ></div>
+    <script src="https://vega-automation.zencite.in/assets/orca/media/embed/player-vx.js
+    "></script>
+    <script>
+      function genrateRandomNumber(min=0, max = 1000000) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function genrateRandomBullen() {
+        return Math.random() >= 0.5;
+      }
+      function generateRandomName() {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        for (var i = 0; i < 5; i++)
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+      }
+      function getVideoConfig(videoId) {
+        console.log(videoId);
+        let response = {
+          widgetsConfig: {
+            text: {
+              list: [
+                {
+                  id: "Text1",
+                  text: "Hello {name} you have a pre-approved offer of {amount}",
+                  start_time: 0,
+                  end_time: 40,
+                  top: 20,
+                  left: 5,
+                  font_color: "white",
+                  font_size: "32",
+                  padding: 5,
+                  align: "fade",
+                },
+              ],
+            },
+          },
+          videoParams: { search: "true", "add-widgets": "text" },
+          personalizationInfo: JSON.stringify({
+            likeCount:genrateRandomNumber(),
+            commentCount:genrateRandomNumber(),
+            shareCount:genrateRandomNumber(),
+            kpwVideoId:videoId,
+            isFollowing:genrateRandomBullen(),
+            isLiked:genrateRandomBullen(),
+            name:generateRandomName()
+          })
+
+            
+        };
+        return response;
+      }
+      const listOfVideos = [];
+      const maxLimit = 3;
+      function onNextPage(currentPlayerIndex) {
+        console.log("pagination called", currentPlayerIndex);
+        //return list of videos from current index to maxLimit
+        let nextIndex = currentPlayerIndex + 1;
+        let endIndex = nextIndex + maxLimit;
+        if (endIndex > listOfVideos.length) {
+          endIndex = listOfVideos.length;
+        }
+        let nextVideos = listOfVideos.slice(nextIndex, endIndex);
+        console.log(nextVideos);
+        if (nextVideos.length === 0) {
+          return [];
+        } else {
+          return nextVideos;
+        }
+      }
+        document.addEventListener("kpw-onclick-button",(e) => {
+           console.log(e)
+        })
+      window.setupVX = function (vxPlayer) {
+        window.bflPlayer = vxPlayer;
+      vxPlayer.on('slideChange', function(currentIndex,prevIndex) {
+      console.log("the last played video  playback time  is ", 
+       vxPlayer._videoList[prevIndex].playbackTime)
+         });
+        return {
+          getVideoConfig: getVideoConfig,
+          //   onNextPage: onNextPage,
+        };
+      };
+    </script>
+  </body>
+</html>
