@@ -1,0 +1,46 @@
+<!--
+  Usage:
+    embededTrack.html?host=vega-automation.zencite.in&kcid=YOUR_KCID&token=YOUR_TOKEN&trackId=YOUR_TRACK_ID
+
+  Note: token can contain +, /, = — use encodeURIComponent on the token before appending to the URL,
+  otherwise + signs are decoded as spaces.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Embed Page</title>
+  <script>
+    const _params  = new URLSearchParams(window.location.search);
+    const _host    = _params.get("host")    || "vega-automation.zencite.in";
+    const _trackId = _params.get("trackId") || "";
+    const _kcid    = _params.get("kcid")    || "";
+    const _token   = _params.get("token")   || "";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const c = document.getElementById("kp-track-embed-container");
+      c.setAttribute("data-ktrack-host",  _host);
+      c.setAttribute("data-ktrack-id",    _trackId);
+      c.setAttribute("data-ktrack-kcid",  _kcid);
+      c.setAttribute("data-ktrack-token", _token);
+
+      const s = document.createElement("script");
+      s.async = true;
+      s.src   = `https://${_host}/assets/orca/media/embed/kp-track-embed.js`;
+      document.body.appendChild(s);
+    });
+  </script>
+</head>
+<body style="margin:0; padding:0; height:100vh;">
+  <div id="kp-track-embed-wrapper" class="kp-track-embed-wrapper" style="height:100%; width:100%;">
+    <div id="kp-track-embed-container"
+      data-ktrack-host=""
+      data-ktrack-id=""
+      data-ktrack-kcid=""
+      data-ktrack-token=""
+      style="height:100%; width:100%;"
+    ></div>
+  </div>
+</body>
+</html>
