@@ -1,0 +1,198 @@
+<!---   
+Usage:
+  embeddablequickshoot.html?host=showcase-qa.zencite.com&kcid=YOUR_KCID&token=YOUR_TOKEN
+
+  Note on token in URL: tokens can be long and contain +, /, = — make sure to encodeURIComponent the token before appending it to the URL in your automation       
+  script, otherwise the + signs get decoded as spaces.
+  -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Page</title>
+    <style>
+      .kpoint-recording-controls {
+        display: flex;
+        padding: 5px;
+        margin: 5px;
+      }
+    </style>
+    <script>
+      // Read config from URL query params: ?host=...&kcid=...&token=...
+      const _params = new URLSearchParams(window.location.search);
+      const _host  = _params.get("host")  || "showcase-qa.zencite.com";
+      const _kcid  = _params.get("kcid")  || "";
+      const _token = _params.get("token") || "";
+
+      // Dynamically load the embed script from the resolved host
+      (function() {
+        const s = document.createElement("script");
+        s.async = true;
+        s.type  = "text/javascript";
+        s.src   = "https://assets.zencite.com/orca/media/embed/quickshootEmbed.js?1";
+        document.head.appendChild(s);
+      })();
+    </script>
+    <script>
+      function createRigelInstance() {
+        window.rigelscreen = new Rigel({
+          "terms": null,
+          "is_vertical_recording_supported": false,
+          "host": _host,
+          "embed": true,
+          // "screenCaptureElement": "monitor", // this can be browser or window or monitor
+          "kcid" : _kcid,
+          "token": _token
+        });
+        window.rigelcamera = new Rigel({
+          "terms": null,
+          "type" : "video",
+          "is_vertical_recording_supported": false,
+          "host": _host,
+          "embed": true,
+          "kcid" : _kcid,
+          "token": _token
+        });
+          setTimeout(() => {
+            window.rigelcamera.initCameraRecorder()
+            .then(() => {
+                console.log("Camera recorder initialized successfully.");
+                  })
+            .catch((err) => {
+                console.error("Error initializing camera recorder: " + err.message);
+                  });
+          }, 1000);
+      }
+      function onDocumentReady(callback) {
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", callback);
+        } else {
+          callback();
+        }
+      }
+
+      function addEventListenerForRigelScriptLoading(){
+        document.addEventListener("rigelScriptLoaded",() => {
+          console.log("**************** Rigel script loaded *********************");
+          createRigelInstance();
+        });
+      }
+
+      onDocumentReady(function() {
+        // Sync data-host attribute with the runtime value
+        document.getElementById("rigel-root").setAttribute("data-host", _host);
+        addEventListenerForRigelScriptLoading();
+      });
+    </script>
+</head>
+<body>
+  <div id="rigel-root" data-host="showcase-qa.zencite.com">
+    <div class="container">
+      <div class="header">
+          <h1>Assessment Page</h1>
+          <p>Please complete the assessment below:</p>
+      </div>
+      <div class="assessment">
+          <h2>Question 1</h2>
+          <p>What is the capital of France?</p>
+          <input type="text" name="question1" id="question1" placeholder="Your answer here">
+      </div>
+      <div class="assessment">
+          <h2>Question 2</h2>
+          <p>What is 2 + 2?</p>
+          <input type="text" name="question2" id="question2" placeholder="Your answer here">
+      </div>
+      <div class="kpoint-recording-controls">
+        <button id="startRecording">Start Recording</button>
+        <button id="stopRecording">Stop Recording</button>
+        <button id="submitScreenRecording">Submit Screen Recording</button>
+        <button id="submitCameraRecording">Submit Camera Recording</button>
+      </div>
+      <p id="submissionMessage" style="display:none;">Recording has been submitted.</p>
+    </div>
+  </div>
+  <script>
+    const startBtn = document.getElementById('startRecording');
+    const stopBtn = document.getElementById('stopRecording');
+    const submitScreenBtn = document.getElementById('submitScreenRecording');
+    const submitCameraBtn = document.getElementById('submitCameraRecording');
+    const submissionMessage = document.getElementById('submissionMessage');
+    async function startScreenRecording() {
+        try {
+            window.rigelscreen.startScreenRecorder();
+            window.rigelcamera.startCameraRecorder();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            // submitBtn.disabled = true;
+            submitCameraBtn.disabled = true;
+            submitScreenBtn.disabled = true;
+        } catch(err){
+            console.log("Errorrrrrrrrr in start recording => ",err); 
+        }
+      }
+
+      async function stopScreenRecording() {
+        try{
+            window.rigelcamera.stopCameraRecorder(()=>{
+                console.log("******************** Camera Recording stoppedddd");
+                stopBtn.disabled = true;
+                startBtn.disabled = true;
+                submitCameraBtn.disabled = false;
+            });
+            window.rigelscreen.stopScreenRecorder(()=>{
+                console.log("******************** Screen Recording stoppedddd");
+                stopBtn.disabled = true;
+                startBtn.disabled = true;
+                submitScreenBtn.disabled = false;
+            });
+        } catch(err){
+            console.log("Errorrrrrrrrr in stop recording => ",err); 
+        }
+      }
+
+      async function submitScreenRecording() {
+        const recordingName = prompt("Please enter the name for your screen recording:");
+        if (recordingName) {
+          try { 
+              window.rigelscreen.submitRecording(`${recordingName}Screen`);
+              startBtn.disabled = true;
+              stopBtn.disabled = true;
+              submitScreenBtn.disabled = true;
+              submissionMessage.style.display = 'block';
+          } catch(err){
+              console.log("Errorrrrrrrrr in submit recording => ",err); 
+          }
+            console.log(`Submitted screen recording with the name: ${recordingName}`);
+            // Add logic to submit the recording with the given name
+        } else {
+            console.log("No name entered. Recording not submitted.");
+        }
+      }
+      async function submitCameraRecording() {
+        const recordingName = prompt("Please enter the name for your camera recording:");
+        if (recordingName) {
+          try { 
+              window.rigelcamera.submitRecording(`${recordingName}Camera`);
+              startBtn.disabled = true;
+              stopBtn.disabled = true;
+              submitCameraBtn.disabled = true;
+              submissionMessage.style.display = 'block';
+          } catch(err){
+              console.log("Errorrrrrrrrr in submit recording => ",err); 
+          }
+            console.log(`Submitted camera recording with the name: ${recordingName}`);
+            // Add logic to submit the recording with the given name
+        } else {
+            console.log("No name entered. Recording not submitted.");
+        }
+      }
+      startBtn.addEventListener('click', startScreenRecording);
+      stopBtn.addEventListener('click', stopScreenRecording);
+      submitCameraBtn.addEventListener('click', submitCameraRecording);
+      submitScreenBtn.addEventListener('click', submitScreenRecording);
+  </script>
+</body>
+</html>
