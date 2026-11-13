@@ -18,7 +18,8 @@
 <body>
   <h1>Multiple Embed — Silk only</h1>
   <p id="page-info"></p>
-  <div id="players"></div>
+  <!-- not id="players": the embed script uses window.players -->
+  <div id="kp-multi-embed-players"></div>
   <script>window.MULTI_EMBED_LAYOUT = "silk";</script>
   <script>
 /*
@@ -51,7 +52,7 @@
     bitsy: ["bitsy"]
   };
   var layout = LAYOUTS[window.MULTI_EMBED_LAYOUT] ? window.MULTI_EMBED_LAYOUT : "mixed";
-  var root = document.getElementById("players");
+  var root = document.getElementById("kp-multi-embed-players");
 
   LAYOUTS[layout].forEach(function (kind, i) {
     var box = document.createElement("div");
@@ -73,7 +74,7 @@
   });
 
   document.getElementById("page-info").textContent =
-    "layout=" + layout + " · host=" + host;
+    "layout=" + layout + " | host=" + host;
 
   var s = document.createElement("script");
   s.async = true;
