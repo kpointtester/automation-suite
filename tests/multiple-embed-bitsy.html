@@ -25,7 +25,7 @@
 /*
  * Multiple-embed test page setup (same script inlined in multiple-embed.html,
  * multiple-embed-silk.html and multiple-embed-bitsy.html; only MULTI_EMBED_LAYOUT differs):
- *   "mixed" : Silk player + Bitsy player + untyped player (no data-player-type)  — I7836 + player-controls outline
+ *   "mixed" : Silk player + untyped player (no data-player-type) + Bitsy player — Silk-style players first  — I7836 + player-controls outline
  *   "silk"  : one Silk player only   (regression guard)
  *   "bitsy" : one Bitsy player only  (regression guard)
  *
@@ -36,18 +36,18 @@
  *   untyped=<gcc-id>          video for the untyped player
  *
  * Videos are public vega-automation videos WITHOUT a quiz / end card, so the end screen shows Replay.
- * The Silk video has several highlights (TOC) and a transcript (in-video search).
+ * Silk video: 2+ highlights and a transcript ("hi" search hit); untyped video: 4 highlights.
  */
 (function () {
   var params = new URLSearchParams(window.location.search);
   var host = params.get("host") || "vega-automation.zencite.in";
   var VIDEOS = {
-    silk: params.get("silk") || "gcc-7749a5de-05fd-4545-9435-bf0ef8cbff07",
+    silk: params.get("silk") || "gcc-04998846-cdd9-4081-b365-133512ce5139",
     bitsy: params.get("bitsy") || "gcc-d4b998fc-362f-4c06-9792-34f626cd1db9",
-    untyped: params.get("untyped") || "gcc-12df31aa-c674-478c-9604-804d5f8d4fb6"
+    untyped: params.get("untyped") || "gcc-7749a5de-05fd-4545-9435-bf0ef8cbff07"
   };
   var LAYOUTS = {
-    mixed: ["silk", "bitsy", "untyped"],
+    mixed: ["silk", "untyped", "bitsy"],
     silk: ["silk"],
     bitsy: ["bitsy"]
   };
