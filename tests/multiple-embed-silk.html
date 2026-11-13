@@ -1,6 +1,6 @@
 <!--
   Multiple Embed — Silk only
-  Shared setup: js/multiple-embed.js (layout "silk"). Optional URL params: host, silk, bitsy, untyped.
+  Player setup is inlined below (layout "silk"); keep the 3 multiple-embed*.html copies in sync. Optional URL params: host, silk, bitsy, untyped.
   Default host vega-automation.zencite.in (QA + staging). Used by features/MultipleEmbed.feature.
 -->
 <!DOCTYPE html>
@@ -20,6 +20,66 @@
   <p id="page-info"></p>
   <div id="players"></div>
   <script>window.MULTI_EMBED_LAYOUT = "silk";</script>
-  <script src="js/multiple-embed.js"></script>
+  <script>
+/*
+ * Multiple-embed test page setup (same script inlined in multiple-embed.html,
+ * multiple-embed-silk.html and multiple-embed-bitsy.html; only MULTI_EMBED_LAYOUT differs):
+ *   "mixed" : Silk player + Bitsy player + untyped player (no data-player-type)  — I7836 + player-controls outline
+ *   "silk"  : one Silk player only   (regression guard)
+ *   "bitsy" : one Bitsy player only  (regression guard)
+ *
+ * URL params (all optional):
+ *   host=<kpoint host>        default vega-automation.zencite.in (works on QA and staging)
+ *   silk=<gcc-id>             video for the Silk player
+ *   bitsy=<gcc-id>            video for the Bitsy player
+ *   untyped=<gcc-id>          video for the untyped player
+ *
+ * Videos are public vega-automation videos WITHOUT a quiz / end card, so the end screen shows Replay.
+ * The Silk video has several highlights (TOC) and a transcript (in-video search).
+ */
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var host = params.get("host") || "vega-automation.zencite.in";
+  var VIDEOS = {
+    silk: params.get("silk") || "gcc-7749a5de-05fd-4545-9435-bf0ef8cbff07",
+    bitsy: params.get("bitsy") || "gcc-d4b998fc-362f-4c06-9792-34f626cd1db9",
+    untyped: params.get("untyped") || "gcc-12df31aa-c674-478c-9604-804d5f8d4fb6"
+  };
+  var LAYOUTS = {
+    mixed: ["silk", "bitsy", "untyped"],
+    silk: ["silk"],
+    bitsy: ["bitsy"]
+  };
+  var layout = LAYOUTS[window.MULTI_EMBED_LAYOUT] ? window.MULTI_EMBED_LAYOUT : "mixed";
+  var root = document.getElementById("players");
+
+  LAYOUTS[layout].forEach(function (kind, i) {
+    var box = document.createElement("div");
+    box.className = "player-box";
+    box.innerHTML = "<h3>Player " + (i + 1) + " — " + kind + "</h3>";
+    var p = document.createElement("div");
+    p.setAttribute("data-video-host", host);
+    p.setAttribute("data-kvideo-id", VIDEOS[kind]);
+    p.setAttribute("data-player", "multi-" + kind);
+    p.style.width = "100%";
+    if (kind === "silk") {
+      p.setAttribute("data-player-type", "silk");
+      p.setAttribute("data-video-params", JSON.stringify({ playerSkinType: "sleek" }));
+    } else if (kind === "bitsy") {
+      p.setAttribute("data-player-type", "bitsy");
+    } // untyped: no data-player-type — the embed script picks its default player
+    box.appendChild(p);
+    root.appendChild(box);
+  });
+
+  document.getElementById("page-info").textContent =
+    "layout=" + layout + " · host=" + host;
+
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://" + host + "/assets/orca/media/embed/videofront-vega.js";
+  document.body.appendChild(s);
+})();
+  </script>
 </body>
 </html>
