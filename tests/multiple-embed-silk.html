@@ -1,0 +1,25 @@
+<!--
+  Multiple Embed — Silk only
+  Shared setup: js/multiple-embed.js (layout "silk"). Optional URL params: host, silk, bitsy, untyped.
+  Default host vega-automation.zencite.in (QA + staging). Used by features/MultipleEmbed.feature.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Embed — Silk only</title>
+  <style>
+    body { font-family: sans-serif; max-width: 960px; margin: 16px auto; padding: 0 16px; }
+    .player-box { margin: 24px 0; }
+    #page-info { color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Multiple Embed — Silk only</h1>
+  <p id="page-info"></p>
+  <div id="players"></div>
+  <script>window.MULTI_EMBED_LAYOUT = "silk";</script>
+  <script src="js/multiple-embed.js"></script>
+</body>
+</html>
