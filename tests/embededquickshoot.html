@@ -1,9 +1,19 @@
-<!---   
+<!---
 Usage:
-  embeddablequickshoot.html?host=showcase-qa.zencite.com&kcid=YOUR_KCID&token=YOUR_TOKEN
+  embededquickshoot.html?host=vega-automation.zencite.in&kcid=YOUR_KCID&token=YOUR_TOKEN
 
-  Note on token in URL: tokens can be long and contain +, /, = — make sure to encodeURIComponent the token before appending it to the URL in your automation       
-  script, otherwise the + signs get decoded as spaces.
+  Optional params:
+    capture=monitor|window|browser   screen capture surface (default: monitor)
+    systemAudio=true|false           require system audio in the screen share (default: true)
+
+  One PiP recording: the screen is recorded with the camera shown picture-in-picture, and a
+  single "Submit Recording" uploads one video (named exactly as entered in the prompt).
+
+  Note on token in URL: tokens can be long and contain +, /, = — encodeURIComponent the token
+  before appending it to the URL, otherwise the + signs get decoded as spaces.
+
+  Camera / microphone health events (Rigel "camerahealth" / "microphonehealth") are logged,
+  alerted, and collected in window.qsHealthEvents for automation.
   -->
 
 
@@ -19,52 +29,88 @@ Usage:
         padding: 5px;
         margin: 5px;
       }
+      .kpoint-recording-controls button {
+        padding: inherit;
+        margin: 10px;
+        border-radius: 10px;
+      }
+      .kpoint-recording-controls .start {
+        background: #d9ebeb;
+      }
+      .kpoint-recording-controls .stop {
+        background: #e2c0c0;
+      }
+      .kpoint-recording-controls .submit {
+        background: #9fe6a8;
+      }
     </style>
     <script>
       // Read config from URL query params: ?host=...&kcid=...&token=...
       const _params = new URLSearchParams(window.location.search);
-      const _host  = _params.get("host")  || "showcase-qa.zencite.com";
+      const _host  = _params.get("host")  || "vega-automation.zencite.in";
       const _kcid  = _params.get("kcid")  || "";
       const _token = _params.get("token") || "";
+      const _capture = _params.get("capture") || "monitor";        // browser | window | monitor
+      const _systemAudio = (_params.get("systemAudio") || "true") !== "false";
 
-      // Dynamically load the embed script from the resolved host
+      // Camera / microphone health events, readable by automation
+      window.qsHealthEvents = [];
+
+      // Load the embed script from the requested host
       (function() {
         const s = document.createElement("script");
         s.async = true;
         s.type  = "text/javascript";
-        s.src   = "https://vega-automation.zencite.in/assets/orca/media/embed/quickshootEmbed.js?1";
+        s.src   = "https://" + _host + "/assets/orca/media/embed/quickshootEmbed.js?1";
         document.head.appendChild(s);
       })();
     </script>
     <script>
       function createRigelInstance() {
         window.rigelscreen = new Rigel({
-          "terms": null,
-          "is_vertical_recording_supported": false,
           "host": _host,
           "embed": true,
-          // "screenCaptureElement": "monitor", // this can be browser or window or monitor
-          "kcid" : _kcid,
+          "screenCaptureElement": _capture,
+          "detectSystemAudio": _systemAudio,
+          "kcid": _kcid,
           "token": _token
         });
         window.rigelcamera = new Rigel({
-          "terms": null,
-          "type" : "video",
-          "is_vertical_recording_supported": false,
           "host": _host,
           "embed": true,
-          "kcid" : _kcid,
+          "type": "video",
+          "kcid": _kcid,
           "token": _token
         });
-          setTimeout(() => {
-            window.rigelcamera.initCameraRecorder()
-            .then(() => {
-                console.log("Camera recorder initialized successfully.");
-                  })
-            .catch((err) => {
-                console.error("Error initializing camera recorder: " + err.message);
-                  });
-          }, 1000);
+        setTimeout(() => {
+          if (window.rigelcamera && typeof window.rigelcamera.on === "function") {
+            window.rigelcamera.on("camerahealth", function (event) {
+              console.log("[Camera Health Event]", event);
+              window.qsHealthEvents.push({ type: "camerahealth", healthy: event.healthy, reason: event.reason });
+              if (!event.healthy) {
+                alert("⚠️ Camera has been disabled (" + event.reason + ").");
+              } else {
+                console.log("[Camera Health] Camera is healthy");
+              }
+            });
+
+            window.rigelcamera.on("microphonehealth", function (event) {
+              console.log("[Microphone Health Event]", event);
+              window.qsHealthEvents.push({ type: "microphonehealth", healthy: event.healthy, reason: event.reason });
+              if (!event.healthy) {
+                alert("⚠️ Microphone has been disabled (" + event.reason + ").");
+              } else {
+                console.log("[Microphone Health] Microphone is healthy");
+              }
+            });
+          }
+          window.rigelcamera.initCameraRecorder()
+          .then(() => {
+            console.log("Camera recorder initialized successfully.");
+          }).catch((err) => {
+            console.error("Error initializing camera recorder: " + err.message);
+          });
+        }, 1000);
       }
       function onDocumentReady(callback) {
         if (document.readyState === "loading") {
@@ -89,10 +135,17 @@ Usage:
     </script>
 </head>
 <body>
-  <div id="rigel-root" data-host="showcase-qa.zencite.com">
+<!-- Below div with data-host is necessary to integrate functionality of recording -->
+  <div id="rigel-root" data-host="vega-automation.zencite.in">
     <div class="container">
       <div class="header">
           <h1>Assessment Page</h1>
+          <div class="kpoint-recording-controls">
+            <button class="start" id="startRecording">Start Screen Recording</button>
+            <button class="stop" id="stopRecording">Stop Screen Recording</button>
+            <button class="submit" id="submitRecording">Submit Screen Recording</button>
+          </div>
+          <p id="submissionMessage" style="display:none;margin: 10px; padding:10px;">Recording has been submitted.</p>
           <p>Please complete the assessment below:</p>
       </div>
       <div class="assessment">
@@ -105,94 +158,78 @@ Usage:
           <p>What is 2 + 2?</p>
           <input type="text" name="question2" id="question2" placeholder="Your answer here">
       </div>
-      <div class="kpoint-recording-controls">
-        <button id="startRecording">Start Recording</button>
-        <button id="stopRecording">Stop Recording</button>
-        <button id="submitScreenRecording">Submit Screen Recording</button>
-        <button id="submitCameraRecording">Submit Camera Recording</button>
-      </div>
-      <p id="submissionMessage" style="display:none;">Recording has been submitted.</p>
     </div>
   </div>
   <script>
+    // 3 buttons: start, stop and submit recording
     const startBtn = document.getElementById('startRecording');
     const stopBtn = document.getElementById('stopRecording');
-    const submitScreenBtn = document.getElementById('submitScreenRecording');
-    const submitCameraBtn = document.getElementById('submitCameraRecording');
+    const submitBtn = document.getElementById('submitRecording');
     const submissionMessage = document.getElementById('submissionMessage');
+
+    // Call startScreenRecorder to start recording your screen (camera shown picture-in-picture)
     async function startScreenRecording() {
         try {
-            window.rigelscreen.startScreenRecorder();
-            window.rigelcamera.startCameraRecorder();
+            await window.rigelscreen.startScreenRecorder();
             startBtn.disabled = true;
             stopBtn.disabled = false;
-            // submitBtn.disabled = true;
-            submitCameraBtn.disabled = true;
-            submitScreenBtn.disabled = true;
+            submitBtn.disabled = true;
         } catch(err){
-            console.log("Errorrrrrrrrr in start recording => ",err); 
+            console.log("Error in start recording => ", err);
+            handleScreenRecordingError(err);
         }
-      }
+    }
 
-      async function stopScreenRecording() {
-        try{
-            window.rigelcamera.stopCameraRecorder(()=>{
-                console.log("******************** Camera Recording stoppedddd");
-                stopBtn.disabled = true;
-                startBtn.disabled = true;
-                submitCameraBtn.disabled = false;
-            });
-            window.rigelscreen.stopScreenRecorder(()=>{
-                console.log("******************** Screen Recording stoppedddd");
-                stopBtn.disabled = true;
-                startBtn.disabled = true;
-                submitScreenBtn.disabled = false;
-            });
+    function handleScreenRecordingError(err) {
+        if (err.code === "INVALID_DISPLAY_SURFACE") {
+          alert(`Error: ${err.message}\nExpected: ${err.expected}\nYou selected: ${err.actual}\nSystem audio selected: ${err.systemAudioSelected}`);
+          console.error("Display surface error:", { code: err.code, expected: err.expected, actual: err.actual, systemAudioSelected: err.systemAudioSelected });
+        } else if (err.code === "SYSTEM_AUDIO_REQUIRED") {
+          alert(`Error: ${err.message}\nSystem audio must be enabled for recording.`);
+          console.error("System audio error:", { code: err.code, systemAudioSelected: err.systemAudioSelected });
+        } else if (err.code === "INVALID_SELECTION") {
+          alert(`Error: ${err.message}\nDisplay Surface Error: ${err.displaySurfaceError}\nSystem Audio Error: ${err.systemAudioError}`);
+          console.error("Selection validation error:", { code: err.code, displaySurfaceError: err.displaySurfaceError, systemAudioError: err.systemAudioError, systemAudioSelected: err.systemAudioSelected });
+        } else {
+          alert(`Recording error: ${err.message}`);
+          console.error("Error:", err);
+        }
+    }
+
+    // Call stopScreenRecorder to stop recording your screen
+    async function stopScreenRecording() {
+        try {
+            window.rigelscreen.stopScreenRecorder();
+            stopBtn.disabled = true;
+            startBtn.disabled = true;
+            submitBtn.disabled = false;
         } catch(err){
-            console.log("Errorrrrrrrrr in stop recording => ",err); 
+            console.log("Error in stop recording => ", err);
         }
-      }
+    }
 
-      async function submitScreenRecording() {
-        const recordingName = prompt("Please enter the name for your screen recording:");
+    // Call submitRecording to submit the recording (one PiP video: screen + camera)
+    async function submitScreenRecording() {
+        const recordingName = prompt("Please enter the name for your recording:");
         if (recordingName) {
-          try { 
-              window.rigelscreen.submitRecording(`${recordingName}Screen`);
+          try {
+              window.rigelscreen.submitRecording(`${recordingName}`);
               startBtn.disabled = true;
               stopBtn.disabled = true;
-              submitScreenBtn.disabled = true;
+              submitBtn.disabled = true;
               submissionMessage.style.display = 'block';
           } catch(err){
-              console.log("Errorrrrrrrrr in submit recording => ",err); 
+              console.log("Error in submit recording => ", err);
           }
-            console.log(`Submitted screen recording with the name: ${recordingName}`);
-            // Add logic to submit the recording with the given name
+          console.log(`Submitted screen recording with the name: ${recordingName}`);
         } else {
-            console.log("No name entered. Recording not submitted.");
+          submitBtn.disabled = false;
+          alert("No name entered. Recording not submitted.");
         }
-      }
-      async function submitCameraRecording() {
-        const recordingName = prompt("Please enter the name for your camera recording:");
-        if (recordingName) {
-          try { 
-              window.rigelcamera.submitRecording(`${recordingName}Camera`);
-              startBtn.disabled = true;
-              stopBtn.disabled = true;
-              submitCameraBtn.disabled = true;
-              submissionMessage.style.display = 'block';
-          } catch(err){
-              console.log("Errorrrrrrrrr in submit recording => ",err); 
-          }
-            console.log(`Submitted camera recording with the name: ${recordingName}`);
-            // Add logic to submit the recording with the given name
-        } else {
-            console.log("No name entered. Recording not submitted.");
-        }
-      }
-      startBtn.addEventListener('click', startScreenRecording);
-      stopBtn.addEventListener('click', stopScreenRecording);
-      submitCameraBtn.addEventListener('click', submitCameraRecording);
-      submitScreenBtn.addEventListener('click', submitScreenRecording);
+    }
+    startBtn.addEventListener('click', startScreenRecording);
+    stopBtn.addEventListener('click', stopScreenRecording);
+    submitBtn.addEventListener('click', submitScreenRecording);
   </script>
 </body>
 </html>
